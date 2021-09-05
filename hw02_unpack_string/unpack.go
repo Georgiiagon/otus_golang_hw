@@ -9,7 +9,7 @@ var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(initStr string) (string, error) {
 	byteStr := []byte(initStr)
-	var tmpLetter byte = 0
+	var tmpLetter byte
 	var resultString []byte
 	for _, letter := range byteStr {
 		if letter >= 'a' && letter <= 'z' {
