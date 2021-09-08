@@ -16,6 +16,8 @@ func TestUnpack(t *testing.T) {
 		{input: "abccd", expected: "abccd"},
 		{input: "", expected: ""},
 		{input: "aaa0b", expected: "aab"},
+		{input: "a0b0c0d0e0r0", expected: ""},
+
 		// uncomment if task with asterisk completed
 		// {input: `qwe\4\5`, expected: `qwe45`},
 		// {input: `qwe\45`, expected: `qwe44444`},
@@ -39,6 +41,26 @@ func TestUnpackInvalidString(t *testing.T) {
 		tc := tc
 		t.Run(tc, func(t *testing.T) {
 			_, err := Unpack(tc)
+			require.Truef(t, errors.Is(err, ErrInvalidString), "actual error %q", err)
+		})
+	}
+}
+
+func TestUnpackRussian(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{name: "test_with_russian_letters", input: "р4ш2"},
+		{name: "test_with_commas", input: "Qa4...2"},
+		{name: "test_upper_case_letters", input: "A0B0C0"},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.input, func(t *testing.T) {
+			_, err := Unpack(tc.input)
 			require.Truef(t, errors.Is(err, ErrInvalidString), "actual error %q", err)
 		})
 	}
