@@ -8,10 +8,9 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(initStr string) (string, error) {
-	runeStr := []rune(initStr)
 	var tmpLetter rune
 	var resultString []rune
-	for _, letter := range runeStr {
+	for _, letter := range initStr {
 		if (letter >= 'a' && letter <= 'z') || letter == 10 {
 			tmpLetter = letter
 			resultString = append(resultString, letter)
