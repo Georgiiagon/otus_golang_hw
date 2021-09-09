@@ -56,6 +56,9 @@ func TestUnpackRussian(t *testing.T) {
 		{name: "test_with_russian_letters", input: "р4ш2"},
 		{name: "test_with_commas", input: "Qa4...2"},
 		{name: "test_upper_case_letters", input: "A0B0C0"},
+		{name: "test_only_with_numbers", input: "45"},
+		{name: "test_with_2_digit_number", input: "aaa10b"},
+		{name: "test_start_with_number", input: "3abc"},
 	}
 
 	for _, tc := range tests {
