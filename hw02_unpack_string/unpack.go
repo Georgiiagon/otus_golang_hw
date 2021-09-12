@@ -3,36 +3,39 @@ package hw02unpackstring
 import (
 	"errors"
 	"strconv"
-	"strings"
+	"unicode"
 )
 
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(initStr string) (string, error) {
-	var tmpLetter string
-	var resultString string
+	var tmpLetter rune
+	var resultString []rune
 	for i, letter := range initStr {
-		if (letter >= 'a' && letter <= 'z') || letter == 10 || (i != 0 && initStr[i-1] == 92 && tmpLetter != `\`) {
-			tmpLetter = string(letter)
-			resultString += tmpLetter
+		if unicode.IsLetter(letter) || letter == 10 || (i != 0 && initStr[i-1] == 92 && tmpLetter != 92) {
+			tmpLetter = letter
+			resultString = append(resultString, tmpLetter)
 			continue
 		}
 
-		if tmpLetter == "" && (i != 0 || i == 0) {
+		if tmpLetter == 0 && (i != 0 || i == 0) && letter != 92 {
 			return "", ErrInvalidString
 		}
 
-		if letter >= '1' && letter <= '9' {
+		if unicode.IsDigit(letter) && letter != '0' {
 			repeatTimes, _ := strconv.Atoi(string(letter))
 
-			resultString += strings.Repeat(tmpLetter, repeatTimes-1)
-			tmpLetter = ""
+			for i := repeatTimes; i > 1; i-- {
+				resultString = append(resultString, tmpLetter)
+			}
+
+			tmpLetter = 0
 			continue
 		} else if letter == '0' {
 			resultString = resultString[:len(resultString)-1]
 		}
-		tmpLetter = ""
+		tmpLetter = 0
 	}
 
-	return resultString, nil
+	return string(resultString), nil
 }

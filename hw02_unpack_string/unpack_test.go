@@ -16,8 +16,11 @@ func TestUnpack(t *testing.T) {
 		{input: "abccd", expected: "abccd"},
 		{input: "", expected: ""},
 		{input: "aaa0b", expected: "aab"},
+		{input: `a2e1d\\n`, expected: `aaed\n`},
 		{input: "a0b0c0d0e0r0", expected: ""},
 		{input: "\n5", expected: "\n\n\n\n\n"},
+		{input: `\22\2a\2\2`, expected: `222a22`},
+		{input: `\20\\3`, expected: `\\\`},
 
 		// uncomment if task with asterisk completed
 		{input: `qwe\4\5`, expected: `qwe45`},
@@ -53,9 +56,7 @@ func TestStrangeCases(t *testing.T) {
 		input    string
 		expected string
 	}{
-		{name: "test_with_russian_letters", input: "р4ш2"},
 		{name: "test_with_commas", input: "Qa4...2"},
-		{name: "test_upper_case_letters", input: "A0B0C0"},
 		{name: "test_only_with_numbers", input: "45"},
 		{name: "test_with_2_digit_number", input: "aaa10b"},
 		{name: "test_start_with_number", input: "3abc"},
