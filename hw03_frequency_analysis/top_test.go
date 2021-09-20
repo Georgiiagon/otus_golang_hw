@@ -110,5 +110,4 @@ func TestStrangeCases(t *testing.T) {
 			require.Equal(t, tc.expected, Top10(tc.input))
 		})
 	}
-
 }
