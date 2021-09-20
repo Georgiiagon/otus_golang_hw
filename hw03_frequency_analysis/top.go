@@ -10,7 +10,8 @@ type WordFrequency struct {
 	Count int
 }
 
-func Top10(initStr string) (result []string) {
+func Top10(initStr string) []string {
+	result := make([]string, 0, 10)
 	stringSlice := strings.Fields(initStr)
 
 	resultMap := make(map[string]int)
@@ -34,5 +35,5 @@ func Top10(initStr string) (result []string) {
 		result = append(result, word.Word)
 	}
 
-	return
+	return result
 }
