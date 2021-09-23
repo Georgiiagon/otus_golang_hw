@@ -80,3 +80,34 @@ func TestTop10(t *testing.T) {
 		}
 	})
 }
+
+func TestStrangeCases(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected []string
+	}{
+		{
+			name:     "test_only_with_numbers",
+			input:    "45 55 12 54 55 54 11 11 12 1 1 1 1",
+			expected: []string{"1", "11", "12", "54", "55", "45"},
+		},
+		{
+			name:     "test_punctuation_marks",
+			input:    "... ... ... -- - - - = = = = =",
+			expected: []string{"=", "-", "...", "--"},
+		},
+		{
+			name:     "test_with_one_word",
+			input:    "     q     q     q     k",
+			expected: []string{"q", "k"},
+		},
+	}
+
+	for _, tc := range tests {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			require.Equal(t, tc.expected, Top10(tc.input))
+		})
+	}
+}
