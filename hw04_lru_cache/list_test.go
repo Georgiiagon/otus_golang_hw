@@ -47,4 +47,20 @@ func TestList(t *testing.T) {
 		}
 		require.Equal(t, []int{70, 80, 60, 40, 10, 30, 50}, elems)
 	})
+
+	t.Run("check element position", func(t *testing.T) {
+		l := NewList()
+
+		l.PushFront(1) // [10]
+		l.PushFront(2) // [10]
+		l.PushFront(3) // [10]
+		l.PushFront(4) // [10]
+		l.PushFront(5) // [10]
+		require.Equal(t, 5, l.Len())
+		require.Equal(t, 1, l.Back().Value)
+		require.Equal(t, 5, l.Back().Prev.Prev.Prev.Prev.Value)
+		require.Equal(t, 1, l.Front().Next.Next.Next.Next.Value)
+		require.Nil(t, l.Back().Next)
+		require.Nil(t, l.Front().Prev)
+	})
 }
