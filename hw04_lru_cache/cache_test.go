@@ -83,6 +83,29 @@ func TestCache(t *testing.T) {
 		require.True(t, ok)
 		require.Equal(t, 3, val)
 	})
+
+	t.Run("max capacity", func(t *testing.T) {
+		c := NewCache(2)
+		c.Set("a", 1)
+		c.Set("b", 2)
+		c.Set("c", 3)
+		c.Set("d", 4)
+		val, ok := c.Get("a")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("b")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("c")
+		require.True(t, ok)
+		require.Equal(t, 3, val)
+
+		val, ok = c.Get("d")
+		require.True(t, ok)
+		require.Equal(t, 4, val)
+	})
 }
 
 func TestCacheMultithreading(t *testing.T) {
