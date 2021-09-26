@@ -37,11 +37,12 @@ func (lru *lruCache) Set(key Key, value interface{}) bool {
 	} else {
 		lru.queue.PushFront(cItem)
 	}
-	lru.items[key] = lru.queue.Front()
 
 	if lru.queue.Len() > lru.capacity {
 		lru.deleteLast()
 	}
+
+	lru.items[key] = lru.queue.Front()
 
 	return ok
 }
@@ -63,7 +64,7 @@ func (lru *lruCache) Get(key Key) (interface{}, bool) {
 func (lru *lruCache) Clear() {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
-	lru.items = make(map[Key]*ListItem)
+	lru.items = make(map[Key]*ListItem, lru.capacity)
 	lru.queue = NewList()
 }
 
