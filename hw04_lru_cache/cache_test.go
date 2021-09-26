@@ -26,6 +26,14 @@ func TestCache(t *testing.T) {
 		val, ok = c.Get("d")
 		require.True(t, ok)
 		require.Equal(t, 4, val)
+
+		val, ok = c.Get("c")
+		require.False(t, ok)
+		require.Nil(t, val)
+
+		val, ok = c.Get("b")
+		require.False(t, ok)
+		require.Nil(t, val)
 	})
 
 	t.Run("empty cache", func(t *testing.T) {
