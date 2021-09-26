@@ -10,6 +10,24 @@ import (
 )
 
 func TestCache(t *testing.T) {
+	t.Run("ejection of elements", func(t *testing.T) {
+		c := NewCache(2)
+		c.Set("a", 1)
+		c.Set("b", 2)
+		c.Get("a")
+		c.Set("c", 3)
+		c.Get("a")
+		c.Set("d", 4)
+
+		val, ok := c.Get("a")
+		require.True(t, ok)
+		require.Equal(t, 1, val)
+
+		val, ok = c.Get("d")
+		require.True(t, ok)
+		require.Equal(t, 4, val)
+	})
+
 	t.Run("empty cache", func(t *testing.T) {
 		c := NewCache(10)
 

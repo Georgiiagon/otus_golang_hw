@@ -1,6 +1,8 @@
 package hw04lrucache
 
-import "sync"
+import (
+	"sync"
+)
 
 type Key string
 
@@ -25,6 +27,7 @@ type cacheItem struct {
 func (lru *lruCache) Set(key Key, value interface{}) bool {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
+
 	item, ok := lru.items[key]
 	cItem := cacheItem{key: key, value: value}
 
@@ -46,7 +49,6 @@ func (lru *lruCache) Set(key Key, value interface{}) bool {
 func (lru *lruCache) Get(key Key) (interface{}, bool) {
 	lru.mu.Lock()
 	defer lru.mu.Unlock()
-
 	item, ok := lru.items[key]
 	if !ok {
 		return nil, false
