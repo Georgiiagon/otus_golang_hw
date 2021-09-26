@@ -82,7 +82,7 @@ func TestList(t *testing.T) {
 		require.Nil(t, l.Front().Prev)
 	})
 
-	t.Run("check push back element position", func(t *testing.T) {
+	t.Run("check move front", func(t *testing.T) {
 		l := NewList()
 
 		l.PushBack(1)        // [1]
