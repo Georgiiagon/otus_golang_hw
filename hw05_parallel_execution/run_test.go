@@ -33,7 +33,7 @@ func TestRun(t *testing.T) {
 		workersCount := 10
 		maxErrorsCount := 23
 		err := Run(tasks, workersCount, maxErrorsCount)
-
+		fmt.Println(err, ErrErrorsLimitExceeded)
 		require.Truef(t, errors.Is(err, ErrErrorsLimitExceeded), "actual err - %v", err)
 		require.LessOrEqual(t, runTasksCount, int32(workersCount+maxErrorsCount), "extra tasks were started")
 	})
@@ -61,6 +61,7 @@ func TestRun(t *testing.T) {
 
 		start := time.Now()
 		err := Run(tasks, workersCount, maxErrorsCount)
+		fmt.Println(err)
 		elapsedTime := time.Since(start)
 		require.NoError(t, err)
 
