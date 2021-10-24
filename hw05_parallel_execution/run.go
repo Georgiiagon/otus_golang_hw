@@ -18,44 +18,46 @@ type settings struct {
 
 // Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
-	ch := make(chan Task, n)
+	ch := make(chan Task, len(tasks))
 	errCount := int64(m)
 	s := settings{
 		ch:       ch,
 		errCount: &errCount,
 		wg:       &sync.WaitGroup{},
 	}
-
-	s.wg.Add(len(tasks))
+	s.wg.Add(n)
 
 	for i := 0; i < n; i++ {
-		go worker(&s)
+		go func() {
+			defer s.wg.Done()
+			worker(&s)
+		}()
 	}
 
-	for _, task := range tasks {
-		if atomic.LoadInt64(s.errCount) >= 0 {
-			s.ch <- task
-			continue
-		}
-		close(s.ch)
-		return ErrErrorsLimitExceeded
+	for _, t := range tasks {
+		s.ch <- t
 	}
+
 	close(s.ch)
 	s.wg.Wait()
+
+	if atomic.LoadInt64(s.errCount) < 0 {
+		return ErrErrorsLimitExceeded
+	}
 
 	return nil
 }
 
 func worker(s *settings) {
-	for {
-		task, ok := <-s.ch
-		if !ok {
+	for t := range s.ch {
+		if atomic.LoadInt64(s.errCount) <= 0 {
 			return
 		}
-		err := task()
+
+		err := t()
+
 		if err != nil {
 			atomic.AddInt64(s.errCount, -1)
 		}
-		s.wg.Done()
 	}
 }
