@@ -16,7 +16,6 @@ type settings struct {
 	wg       *sync.WaitGroup
 }
 
-// Run starts tasks in n goroutines and stops its work when receiving m errors from tasks.
 func Run(tasks []Task, n, m int) error {
 	ch := make(chan Task, len(tasks))
 	errCount := int64(m)
@@ -55,7 +54,6 @@ func worker(s *settings) {
 		}
 
 		err := t()
-
 		if err != nil {
 			atomic.AddInt64(s.errCount, -1)
 		}
