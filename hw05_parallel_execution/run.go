@@ -17,7 +17,7 @@ type settings struct {
 }
 
 func Run(tasks []Task, n, m int) error {
-	ch := make(chan Task, len(tasks))
+	ch := make(chan Task)
 	errCount := int64(m)
 	s := settings{
 		ch:       ch,
@@ -34,6 +34,9 @@ func Run(tasks []Task, n, m int) error {
 	}
 
 	for _, t := range tasks {
+		if atomic.LoadInt64(s.errCount) <= 0 {
+			break
+		}
 		s.ch <- t
 	}
 
@@ -49,10 +52,6 @@ func Run(tasks []Task, n, m int) error {
 
 func worker(s *settings) {
 	for t := range s.ch {
-		if atomic.LoadInt64(s.errCount) <= 0 {
-			return
-		}
-
 		err := t()
 		if err != nil {
 			atomic.AddInt64(s.errCount, -1)
