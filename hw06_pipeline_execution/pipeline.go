@@ -34,7 +34,6 @@ func work(in In, done In) Out {
 				out <- v
 			}
 		}
-
 	}()
 
 	return out
