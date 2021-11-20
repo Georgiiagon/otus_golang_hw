@@ -6,7 +6,7 @@ import (
 	"io/fs"
 	"os"
 
-	"github.com/cheggaaa/pb/v3"
+	"github.com/cheggaaa/pb"
 )
 
 var (
@@ -31,9 +31,6 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	if limit == 0 {
 		limit = count
 	}
-	step := int64(100)
-	bar := pb.StartNew(int(count/step) + 1)
-	defer bar.Finish()
 
 	newFile, err := os.Create(toPath)
 	if err != nil {
@@ -44,6 +41,10 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 	if offset != 0 {
 		file.Seek(offset, 0)
 	}
+
+	step := int64(100)
+	bar := pb.StartNew(int(count/step) + 1)
+	defer bar.Finish()
 
 	for {
 		if limit < step {

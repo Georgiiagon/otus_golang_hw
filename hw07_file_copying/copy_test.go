@@ -13,32 +13,35 @@ var (
 )
 
 func TestCopy(t *testing.T) {
-	Copy(testFileName, newFileName, 2, 0)
-	defer os.Remove(newFileName)
+	tempFile, _ := os.CreateTemp("tmp", "new_input_*.txt")
+	Copy(testFileName, tempFile.Name(), 2, 0)
+	defer os.Remove(tempFile.Name())
 	testFile, _ := os.OpenFile(testFileName, os.O_RDONLY, fileMode)
-	newFile, _ := os.OpenFile(newFileName, os.O_RDONLY, fileMode)
+	newFile, _ := os.OpenFile(tempFile.Name(), os.O_RDONLY, fileMode)
 	testFileStat, _ := testFile.Stat()
 	newFileStat, _ := newFile.Stat()
 	require.Equal(t, testFileStat.Size()-2, newFileStat.Size())
 }
 
 func TestNegativeLimitCopy(t *testing.T) {
-	Copy(testFileName, newFileName, 2, -1)
-	defer os.Remove(newFileName)
-	newFile, _ := os.OpenFile(newFileName, os.O_RDONLY, fileMode)
+	tempFile, _ := os.CreateTemp("tmp", "new_input_*.txt")
+	Copy(testFileName, tempFile.Name(), 2, -1)
+	defer os.Remove(tempFile.Name())
+	newFile, _ := os.OpenFile(tempFile.Name(), os.O_RDONLY, fileMode)
 	newFileStat, _ := newFile.Stat()
-	require.FileExists(t, newFileName)
+	require.FileExists(t, tempFile.Name())
 	require.Equal(t, int64(0), newFileStat.Size())
 }
 
 func TestNegativeOffsetCopy(t *testing.T) {
-	Copy(testFileName, newFileName, -1, 0)
-	defer os.Remove(newFileName)
+	tempFile, _ := os.CreateTemp("tmp", "new_input_*.txt")
+	Copy(testFileName, tempFile.Name(), -1, 0)
+	defer os.Remove(tempFile.Name())
 	testFile, _ := os.OpenFile(testFileName, os.O_RDONLY, fileMode)
-	newFile, _ := os.OpenFile(newFileName, os.O_RDONLY, fileMode)
+	newFile, _ := os.OpenFile(tempFile.Name(), os.O_RDONLY, fileMode)
 	testFileStat, _ := testFile.Stat()
 	newFileStat, _ := newFile.Stat()
-	require.FileExists(t, newFileName)
+	require.FileExists(t, tempFile.Name())
 	require.Equal(t, testFileStat.Size(), newFileStat.Size())
 }
 
@@ -105,11 +108,12 @@ func TestDifferentCases(t *testing.T) {
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.testFileName, func(t *testing.T) {
-			newFileName := "tmp/" + tc.testFileName
-			Copy(testFileName, newFileName, int64(tc.offset), int64(tc.limit))
-			defer os.Remove(newFileName)
+			tempFile, _ := os.CreateTemp("tmp", "*_"+tc.testFileName)
+
+			Copy(testFileName, tempFile.Name(), int64(tc.offset), int64(tc.limit))
+			defer os.Remove(tempFile.Name())
 			testFile, _ := os.OpenFile("testdata/"+tc.testFileName, os.O_RDONLY, fileMode)
-			newFile, _ := os.OpenFile(newFileName, os.O_RDONLY, fileMode)
+			newFile, _ := os.OpenFile(tempFile.Name(), os.O_RDONLY, fileMode)
 			testFileStat, _ := testFile.Stat()
 			newFileStat, _ := newFile.Stat()
 			require.Equal(t, testFileStat.Size(), newFileStat.Size())
