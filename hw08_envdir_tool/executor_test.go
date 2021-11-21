@@ -11,5 +11,5 @@ func TestRunCmd(t *testing.T) {
 	require.NoError(t, err)
 	code := RunCmd([]string{"ls", "-l", "-a"}, env)
 
-	require.Equal(t, code, 1)
+	require.Equal(t, code, 0)
 }
