@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/exec"
 )
@@ -10,10 +9,9 @@ import (
 func RunCmd(cmd []string, env Environment) (returnCode int) {
 	command := exec.Command(cmd[0], cmd[1:]...) //nolint:gosec
 	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
 	prepareEnv(env)
-	if err := command.Run(); err != nil {
-		log.Fatal(err)
-	}
+	command.Run()
 
 	return command.ProcessState.ExitCode()
 }

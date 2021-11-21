@@ -2,9 +2,12 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"errors"
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 type Environment map[string]EnvValue
@@ -14,6 +17,8 @@ type EnvValue struct {
 	Value      string
 	NeedRemove bool
 }
+
+var errInvalidChar = errors.New("string contains invalid character")
 
 // ReadDir reads a specified directory and returns map of env variables.
 // Variables represented as files where filename is name of variable, file first line is a value.
@@ -35,6 +40,10 @@ func ReadDir(dir string) (Environment, error) {
 
 		line = prepareValue(line)
 
+		if strings.Contains(string(line), "=") || strings.Contains(fileStat.Name(), "=") {
+			return nil, errInvalidChar
+		}
+
 		env[fileStat.Name()] = EnvValue{
 			Value:      string(line),
 			NeedRemove: len(line) == 0,
@@ -45,15 +54,9 @@ func ReadDir(dir string) (Environment, error) {
 }
 
 func prepareValue(line []byte) []byte {
-	for i, byte := range line {
-		if byte == 0 {
-			line[i] = '\n'
-		}
-	}
+	line = bytes.ReplaceAll(line, []byte{0}, []byte{'\n'})
 
-	if len(line) > 0 && line[len(line)-1] == ' ' {
-		line = line[:len(line)-1]
-	}
+	line = []byte(strings.TrimRight(string(line), " "))
 
 	return line
 }
