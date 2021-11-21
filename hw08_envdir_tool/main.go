@@ -17,5 +17,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	RunCmd(args[1:], env)
+	os.Exit(RunCmd(args[1:], env))
 }
