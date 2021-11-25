@@ -31,7 +31,7 @@ func ReadDir(dir string) (Environment, error) {
 
 	for _, fileStat := range dirInfo {
 		info, err := fileStat.Info()
-		if err == os.ErrPermission {
+		if errors.Is(err, os.ErrPermission) {
 			log.Print(err)
 			continue
 		} else if err != nil {
@@ -39,7 +39,7 @@ func ReadDir(dir string) (Environment, error) {
 		}
 
 		file, err := os.OpenFile(path.Join(dir, fileStat.Name()), os.O_RDONLY, info.Mode())
-		if err == os.ErrPermission {
+		if errors.Is(err, os.ErrPermission) {
 			log.Print(err)
 		} else if err != nil {
 			log.Fatal(err)
