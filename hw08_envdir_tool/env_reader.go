@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"strings"
 )
 
@@ -24,16 +24,27 @@ var errInvalidChar = errors.New("string contains invalid character")
 // Variables represented as files where filename is name of variable, file first line is a value.
 func ReadDir(dir string) (Environment, error) {
 	env := make(Environment)
-	dirInfo, err := ioutil.ReadDir(dir)
+	dirInfo, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, fileStat := range dirInfo {
-		file, err := os.OpenFile(dir+"/"+fileStat.Name(), os.O_RDONLY, fileStat.Mode())
-		if err != nil {
+		info, err := fileStat.Info()
+		if err == os.ErrPermission {
+			log.Print(err)
+			continue
+		} else if err != nil {
 			log.Fatal(err)
 		}
+
+		file, err := os.OpenFile(path.Join(dir, fileStat.Name()), os.O_RDONLY, info.Mode())
+		if err == os.ErrPermission {
+			log.Print(err)
+		} else if err != nil {
+			log.Fatal(err)
+		}
+
 		reader := bufio.NewReader(file)
 		line, _, _ := reader.ReadLine()
 		file.Close()
