@@ -23,6 +23,7 @@ type (
 	}
 
 	App struct {
+		Number    int      `validate:"max:100|min:55"`
 		Version   string   `validate:"len:5|in:glass,maxon"`
 		testArray []string `validate:"len:1|in:a,b,c,d,e,z"`
 	}
@@ -45,7 +46,7 @@ func TestValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			in:          App{Version: "glass", testArray: []string{"a", "b", "c"}},
+			in:          App{Number: 100, Version: "glass", testArray: []string{"a", "b", "c"}},
 			expectedErr: nil,
 		},
 		// ...
