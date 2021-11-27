@@ -23,7 +23,8 @@ type (
 	}
 
 	App struct {
-		Version string `validate:"len:5"`
+		Version   string   `validate:"len:5|in:glass,maxon"`
+		testArray []string `validate:"len:1|in:a,b,c,d,e,z"`
 	}
 
 	Token struct {
@@ -44,7 +45,7 @@ func TestValidate(t *testing.T) {
 		expectedErr error
 	}{
 		{
-			in:          App{Version: "glass"},
+			in:          App{Version: "glass", testArray: []string{"a", "b", "c"}},
 			expectedErr: nil,
 		},
 		// ...
