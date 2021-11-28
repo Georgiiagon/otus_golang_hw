@@ -50,6 +50,10 @@ type (
 		ID          int    `validate:"max:a"`
 		Description string `validate:"test:a"`
 	}
+
+	WrongValidationThird struct {
+		Name string `validate:"len:"`
+	}
 )
 
 func TestValidate(t *testing.T) {
@@ -151,13 +155,14 @@ func TestValidate(t *testing.T) {
 }
 
 func TestOsExit(t *testing.T) {
-	fakeExitOne := func() {
+	require.Panics(t, func() {
 		Validate(WrongValidationSecond{Description: "test"})
-	}
-	fakeExitTwo := func() {
-		Validate(WrongValidationSecond{ID: 1})
-	}
 
-	require.Panics(t, fakeExitOne)
-	require.Panics(t, fakeExitTwo)
+	})
+	require.Panics(t, func() {
+		Validate(WrongValidationSecond{ID: 1})
+	})
+	require.Panics(t, func() {
+		Validate(WrongValidationThird{Name: "qwe"})
+	})
 }
