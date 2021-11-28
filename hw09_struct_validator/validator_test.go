@@ -47,7 +47,7 @@ type (
 	}
 
 	WrongValidationSecond struct {
-		ID          int    `validate:"int:200"`
+		ID          int    `validate:"max:a"`
 		Description string `validate:"test:a"`
 	}
 )
@@ -148,4 +148,16 @@ func TestValidate(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestOsExit(t *testing.T) {
+	fakeExitOne := func() {
+		Validate(WrongValidationSecond{Description: "test"})
+	}
+	fakeExitTwo := func() {
+		Validate(WrongValidationSecond{ID: 1})
+	}
+
+	require.Panics(t, fakeExitOne)
+	require.Panics(t, fakeExitTwo)
 }

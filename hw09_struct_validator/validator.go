@@ -51,7 +51,7 @@ func Validate(v interface{}) error {
 		tagV := field.Tag
 		rules, err := SplitRules(tagV.Get("validate"))
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		validErrors := validateField(field.Name, value, rules)

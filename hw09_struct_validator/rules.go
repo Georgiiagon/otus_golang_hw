@@ -42,7 +42,7 @@ func (r Rule) ValidateString(value reflect.Value) error {
 	case "regexp":
 		matched, err := regexp.MatchString(r.value.(string), stringValue)
 		if err != nil {
-			log.Fatal(err)
+			log.Panic(err)
 		}
 
 		if matched {
@@ -62,7 +62,7 @@ func (r Rule) ValidateInt(value reflect.Value) error {
 		for _, val := range r.value.([]string) {
 			expectedVal, err := strconv.Atoi(val)
 			if err != nil {
-				log.Fatal(err)
+				log.Panic(err)
 			}
 
 			if intValue == expectedVal {
