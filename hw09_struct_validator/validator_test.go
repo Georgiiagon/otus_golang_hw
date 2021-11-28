@@ -75,6 +75,7 @@ func TestValidate(t *testing.T) {
 				Email:  faker.SafeEmail(),
 				Role:   "admin",
 				Phones: []string{faker.DigitsWithSize(11), faker.DigitsWithSize(11), "89222222222"},
+				meta:   json.RawMessage("{\"test\": \"test\"}"),
 			},
 			expectedErr: nil,
 		},

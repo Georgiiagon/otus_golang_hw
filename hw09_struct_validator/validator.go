@@ -50,7 +50,6 @@ func Validate(v interface{}) error {
 		field := typeV.Field(i)
 		tagV := field.Tag
 		rules, err := SplitRules(tagV.Get("validate"))
-
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -73,7 +72,6 @@ func validateField(fieldName string, value reflect.Value, rules []Rule) Validati
 	case reflect.Slice:
 		for i := 0; i < value.Len(); i++ {
 			err := validateField(fieldName, value.Index(i), rules)
-
 			if err != nil {
 				validationErrors = append(validationErrors, err...)
 			}
