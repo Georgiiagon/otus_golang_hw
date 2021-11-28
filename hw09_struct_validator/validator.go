@@ -12,6 +12,8 @@ type ValidationError struct {
 	Err   error
 }
 
+var tagValue = "validate"
+
 func (v ValidationError) Error() string {
 	var b strings.Builder
 	b.Write([]byte(v.Field))
@@ -49,7 +51,7 @@ func Validate(v interface{}) error {
 		value := reflectV.Field(i)
 		field := typeV.Field(i)
 		tagV := field.Tag
-		rules, err := SplitRules(tagV.Get("validate"))
+		rules, err := SplitRules(tagV.Get(tagValue))
 		if err != nil {
 			log.Panic(err)
 		}
