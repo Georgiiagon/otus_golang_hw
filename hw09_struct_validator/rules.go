@@ -15,12 +15,12 @@ type Rule struct {
 }
 
 var (
-	ErrUnexpectedRule = errors.New("rule is unexpected")
-	ErrorInRange      = errors.New("value is unexpected")
-	ErrLen            = errors.New("length should be different")
-	ErrRegexp         = errors.New("regexp is not matched")
-	ErrMax            = errors.New("number is too big")
-	ErrMin            = errors.New("number is too small")
+	ErrUnexpectedRule  = errors.New("rule is unexpected")
+	ErrUnexpectedValue = errors.New("value is unexpected")
+	ErrLen             = errors.New("length should be different")
+	ErrRegexp          = errors.New("regexp is not matched")
+	ErrMax             = errors.New("number is too big")
+	ErrMin             = errors.New("number is too small")
 )
 
 func (r Rule) ValidateString(value reflect.Value) error {
@@ -32,7 +32,7 @@ func (r Rule) ValidateString(value reflect.Value) error {
 				return nil
 			}
 		}
-		return ErrorInRange
+		return ErrUnexpectedValue
 
 	case "len":
 		if len(stringValue) == r.value.(int) {
@@ -42,7 +42,7 @@ func (r Rule) ValidateString(value reflect.Value) error {
 	case "regexp":
 		matched, err := regexp.MatchString(r.value.(string), stringValue)
 		if err != nil {
-			return err
+			log.Fatal(err)
 		}
 
 		if matched {
@@ -62,7 +62,7 @@ func (r Rule) ValidateInt(value reflect.Value) error {
 		for _, val := range r.value.([]string) {
 			expectedVal, err := strconv.Atoi(val)
 			if err != nil {
-				return err
+				log.Fatal(err)
 			}
 
 			if intValue == expectedVal {
@@ -70,7 +70,7 @@ func (r Rule) ValidateInt(value reflect.Value) error {
 			}
 		}
 
-		return ErrorInRange
+		return ErrUnexpectedValue
 
 	case "min":
 		if intValue >= r.value.(int) {
@@ -87,13 +87,16 @@ func (r Rule) ValidateInt(value reflect.Value) error {
 	return ErrUnexpectedRule
 }
 
-func SplitRules(stringRules string) []Rule {
+func SplitRules(stringRules string) ([]Rule, error) {
 	rulesArr := strings.Split(stringRules, "|")
 	rules := make([]Rule, 0, len(rulesArr))
 	var value interface{}
 	var err error
 	for _, r := range rulesArr {
 		ruleArr := strings.Split(r, ":")
+		if len(ruleArr) != 2 {
+			continue
+		}
 
 		switch ruleArr[0] {
 		case "in":
@@ -103,12 +106,12 @@ func SplitRules(stringRules string) []Rule {
 		default:
 			value, err = strconv.Atoi(ruleArr[1])
 			if err != nil {
-				log.Fatal(err)
+				return nil, err
 			}
 		}
 
 		rules = append(rules, Rule{name: ruleArr[0], value: value})
 	}
 
-	return rules
+	return rules, nil
 }
