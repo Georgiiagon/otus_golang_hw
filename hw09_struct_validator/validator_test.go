@@ -157,7 +157,6 @@ func TestValidate(t *testing.T) {
 func TestOsExit(t *testing.T) {
 	require.Panics(t, func() {
 		Validate(WrongValidationSecond{Description: "test"})
-
 	})
 	require.Panics(t, func() {
 		Validate(WrongValidationSecond{ID: 1})
