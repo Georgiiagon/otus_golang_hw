@@ -2,6 +2,7 @@ package hw10programoptimization
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -37,7 +38,7 @@ func getUsers(r io.Reader) (users, error) {
 
 		line, _, err = reader.ReadLine()
 
-		if err == io.EOF {
+		if errors.Is(err, io.EOF) {
 			break
 		}
 
