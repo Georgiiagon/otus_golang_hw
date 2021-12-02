@@ -11,13 +11,7 @@ import (
 
 //easyjson:json
 type User struct {
-	ID       int
-	Name     string
-	Username string
-	Email    string
-	Phone    string
-	Password string
-	Address  string
+	Email string
 }
 
 type DomainStat map[string]int
@@ -34,15 +28,16 @@ type users []User
 
 func getUsers(r io.Reader) (users, error) {
 	reader := bufio.NewReader(r)
-	result := make(users, 0, 1000)
+	result := make(users, 0)
 	var user *User
 	var err error
+	var line []byte
 	for {
 		user = &User{}
 
-		line, _, error := reader.ReadLine()
+		line, _, err = reader.ReadLine()
 
-		if error == io.EOF {
+		if err == io.EOF {
 			break
 		}
 
@@ -61,7 +56,7 @@ func countDomains(u users, domain string) (DomainStat, error) {
 	result := make(DomainStat)
 	for _, user := range u {
 		if strings.Contains(user.Email, "."+domain) {
-			result[strings.ToLower(strings.SplitN(user.Email, "@", 2)[1])] += 1
+			result[strings.ToLower(strings.Split(user.Email, "@")[1])]++
 		}
 	}
 
