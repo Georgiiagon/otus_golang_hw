@@ -10,6 +10,6 @@ func BenchmarkMain(b *testing.B) {
 	defer r.Close()
 	data, _ := r.File[0].Open()
 	for i := 0; i < b.N; i++ {
-		GetDomainStat(data, "biz")
+		GetDomainStat(data, "com")
 	}
 }
