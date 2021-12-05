@@ -59,7 +59,7 @@ func (r Rule) ValidateInt(intValue int) error {
 		for _, val := range r.value.([]string) {
 			expectedVal, err := strconv.Atoi(val)
 			if err != nil {
-				log.Panic(err)
+				return err
 			}
 
 			if intValue == expectedVal {
