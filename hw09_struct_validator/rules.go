@@ -3,7 +3,6 @@ package hw09structvalidator
 import (
 	"errors"
 	"log"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
@@ -23,8 +22,7 @@ var (
 	ErrMin             = errors.New("number is too small")
 )
 
-func (r Rule) ValidateString(value reflect.Value) error {
-	stringValue := value.String()
+func (r Rule) ValidateString(stringValue string) error {
 	switch r.name {
 	case "in":
 		for _, v := range r.value.([]string) {
@@ -55,8 +53,7 @@ func (r Rule) ValidateString(value reflect.Value) error {
 	return ErrUnexpectedRule
 }
 
-func (r Rule) ValidateInt(value reflect.Value) error {
-	intValue := int(value.Int())
+func (r Rule) ValidateInt(intValue int) error {
 	switch r.name {
 	case "in":
 		for _, val := range r.value.([]string) {

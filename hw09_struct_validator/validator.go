@@ -80,14 +80,14 @@ func validateField(fieldName string, value reflect.Value, rules []Rule) Validati
 		}
 	case reflect.String:
 		for _, rule := range rules {
-			err := rule.ValidateString(value)
+			err := rule.ValidateString(value.String())
 			if err != nil {
 				validationErrors = append(validationErrors, ValidationError{Field: fieldName, Err: err})
 			}
 		}
 	case reflect.Int:
 		for _, rule := range rules {
-			err := rule.ValidateInt(value)
+			err := rule.ValidateInt(int(value.Int()))
 			if err != nil {
 				validationErrors = append(validationErrors, ValidationError{Field: fieldName, Err: err})
 			}
