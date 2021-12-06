@@ -1,6 +1,23 @@
 package main
 
+import (
+	"flag"
+	"net"
+	"time"
+)
+
+var (
+	defaultTimeout = 10 * time.Second
+	Timeout        time.Duration
+	Host           string
+	Port           string
+)
+
 func main() {
-	// Place your code here,
-	// P.S. Do not rush to throw context down, think think if it is useful with blocking operation?
+	flag.DurationVar(&Timeout, "timeout", defaultTimeout, "timeout server connection")
+	flag.StringVar(&Host, "host", "localhost", "host to connect")
+	flag.StringVar(&Port, "port", "443", "port to connect")
+
+	address := net.JoinHostPort(Host, Port)
+	client := NewTelnetClient(address, Timeout)
 }
