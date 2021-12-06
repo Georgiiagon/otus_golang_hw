@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"net"
 	"time"
 )
 
@@ -18,6 +17,6 @@ func main() {
 	flag.StringVar(&Host, "host", "localhost", "host to connect")
 	flag.StringVar(&Port, "port", "443", "port to connect")
 
-	address := net.JoinHostPort(Host, Port)
-	client := NewTelnetClient(address, Timeout)
+	// address := net.JoinHostPort(Host, Port)
+	// client := NewTelnetClient(address, Timeout)
 }
