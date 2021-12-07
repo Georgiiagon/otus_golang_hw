@@ -4,6 +4,8 @@ import (
 	"context"
 	"io"
 	"net"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -23,10 +25,12 @@ type Client struct {
 }
 
 func (c Client) Connect() error {
+	Wg.Add(1)
 	return nil
 }
 
 func (c Client) Close() error {
+	Wg.Done()
 	return c.conn.Close()
 }
 
@@ -53,8 +57,8 @@ func (c Client) Receive() error {
 
 func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, out io.Writer) TelnetClient {
 	dialer := &net.Dialer{}
-	ctx, closeFunc := context.WithTimeout(context.Background(), timeout)
-	defer closeFunc()
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, _ = signal.NotifyContext(ctx, syscall.SIGINT)
 	conn, _ := dialer.DialContext(ctx, "tcp", address)
 
 	return Client{address: address, timeout: timeout, in: in, out: out, conn: conn}
