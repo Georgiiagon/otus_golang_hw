@@ -22,10 +22,15 @@ type Client struct {
 	in      io.ReadCloser
 	out     io.Writer
 	conn    net.Conn
+	Ctx     context.Context
 }
 
 func (c Client) Connect() error {
 	Wg.Add(1)
+	go func() {
+		<-c.Ctx.Done()
+		c.Close()
+	}()
 	return nil
 }
 
@@ -61,5 +66,5 @@ func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, ou
 	ctx, _ = signal.NotifyContext(ctx, syscall.SIGINT)
 	conn, _ := dialer.DialContext(ctx, "tcp", address)
 
-	return Client{address: address, timeout: timeout, in: in, out: out, conn: conn}
+	return Client{address: address, timeout: timeout, in: in, out: out, conn: conn, Ctx: ctx}
 }

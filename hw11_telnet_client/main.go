@@ -26,8 +26,8 @@ func main() {
 	address := net.JoinHostPort(Host, Port)
 	in := &bytes.Buffer{}
 	out := &bytes.Buffer{}
-	NewTelnetClient(address, Timeout, ioutil.NopCloser(in), out)
 
-	Wg.Add(1)
+	client := NewTelnetClient(address, Timeout, ioutil.NopCloser(in), out)
+	client.Connect()
 	Wg.Wait()
 }
