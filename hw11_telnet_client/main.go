@@ -9,6 +9,14 @@ import (
 	"time"
 )
 
+var Wg sync.WaitGroup
+
+func init() {
+	flag.DurationVar(&Timeout, "timeout", defaultTimeout, "timeout server connection")
+	flag.StringVar(&Host, "host", "localhost", "host to connect")
+	flag.StringVar(&Port, "port", "443", "port to connect")
+}
+
 var (
 	defaultTimeout = 10 * time.Second
 	Timeout        time.Duration
@@ -16,12 +24,8 @@ var (
 	Port           string
 )
 
-var Wg sync.WaitGroup
-
 func main() {
-	flag.DurationVar(&Timeout, "timeout", defaultTimeout, "timeout server connection")
-	flag.StringVar(&Host, "host", "localhost", "host to connect")
-	flag.StringVar(&Port, "port", "443", "port to connect")
+	flag.Parse()
 
 	address := net.JoinHostPort(Host, Port)
 	in := &bytes.Buffer{}
