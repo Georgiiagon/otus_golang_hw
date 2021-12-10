@@ -17,10 +17,6 @@ type User struct {
 type DomainStat map[string]int
 
 func GetDomainStat(r io.Reader, domain string) (DomainStat, error) {
-	return countDomains(r, domain)
-}
-
-func countDomains(r io.Reader, domain string) (DomainStat, error) {
 	reader := bufio.NewReader(r)
 	result := make(DomainStat)
 	var user *User
