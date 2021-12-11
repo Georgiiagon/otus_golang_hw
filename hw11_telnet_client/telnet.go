@@ -25,13 +25,19 @@ type Client struct {
 
 func (c *Client) Connect() (err error) {
 	c.conn, err = net.DialTimeout("tcp", c.address, c.timeout)
+	if err != nil {
+		return
+	}
 	fmt.Fprintln(os.Stderr, "...Connected to "+c.address)
 	return
 }
 
-func (c *Client) Close() error {
+func (c *Client) Close() (err error) {
+	if err = c.conn.Close(); err != nil {
+		return
+	}
 	fmt.Fprintln(os.Stderr, "...EOF")
-	return c.conn.Close()
+	return
 }
 
 func (c *Client) Send() error {
