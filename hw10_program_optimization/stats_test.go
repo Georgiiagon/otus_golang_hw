@@ -1,3 +1,4 @@
+//go:build !bench
 // +build !bench
 
 package hw10programoptimization
@@ -35,5 +36,29 @@ func TestGetDomainStat(t *testing.T) {
 		result, err := GetDomainStat(bytes.NewBufferString(data), "unknown")
 		require.NoError(t, err)
 		require.Equal(t, DomainStat{}, result)
+	})
+}
+
+func TestGetDomainStatWithError(t *testing.T) {
+	var domainStat DomainStat
+	t.Run("find in empty source", func(t *testing.T) {
+		data := ""
+		result, err := GetDomainStat(bytes.NewBufferString(data), "com")
+		require.NoError(t, err)
+		require.Equal(t, DomainStat{}, result)
+	})
+
+	t.Run("find in json without email", func(t *testing.T) {
+		data := `{"Id":1}`
+		result, err := GetDomainStat(bytes.NewBufferString(data), "new")
+		require.NoError(t, err)
+		require.Equal(t, DomainStat{}, result)
+	})
+
+	t.Run("find in invalid json", func(t *testing.T) {
+		data := `1111`
+		result, err := GetDomainStat(bytes.NewBufferString(data), "ru")
+		require.Error(t, err, "get users error: EOF")
+		require.Equal(t, domainStat, result)
 	})
 }
