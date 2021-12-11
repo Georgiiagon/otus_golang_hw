@@ -68,7 +68,7 @@ func TestTelnetClient(t *testing.T) {
 
 func TestTelnetClientErrors(t *testing.T) {
 	client := NewTelnetClient("127.0.0.1:1234", timeout, os.Stdin, os.Stdout)
-	require.Errorf(t, client.Connect(), "dial tcp [::1]:80: connect: connection refused")
+	require.Errorf(t, client.Connect(), "dial tcp 127.0.0.1:1234: connect: connection refused")
 	require.Panics(t, func() { client.Close() })
 }
 
