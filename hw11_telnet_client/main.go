@@ -1,37 +1,62 @@
 package main
 
 import (
-	"bytes"
-	"flag"
-	"io/ioutil"
+	"context"
+	"fmt"
+	"log"
 	"net"
-	"sync"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
+
+	"github.com/spf13/pflag"
 )
 
-var Wg sync.WaitGroup
-
 func init() {
-	flag.DurationVar(&Timeout, "timeout", defaultTimeout, "timeout server connection")
-	flag.StringVar(&Host, "host", "localhost", "host to connect")
-	flag.StringVar(&Port, "port", "443", "port to connect")
+	pflag.DurationVar(&timeout, "timeout", defaultTimeout, "timeout server connection")
+	pflag.Parse()
 }
 
 var (
 	defaultTimeout = 10 * time.Second
-	Timeout        time.Duration
-	Host           string
-	Port           string
+	timeout        time.Duration
+	host           string
+	port           string
 )
 
 func main() {
-	flag.Parse()
+	if len(pflag.Args()) < 2 {
+		log.Fatal("should be 2 arguments")
+	}
+	host = pflag.Arg(0)
+	port = pflag.Arg(1)
+	address := net.JoinHostPort(host, port)
 
-	address := net.JoinHostPort(Host, Port)
-	in := &bytes.Buffer{}
-	out := &bytes.Buffer{}
+	client := NewTelnetClient(address, timeout, os.Stdin, os.Stdout)
+	if err := client.Connect(); err != nil {
+		log.Fatal(err)
+	}
+	ctx, _ := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGKILL)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 
-	client := NewTelnetClient(address, Timeout, ioutil.NopCloser(in), out)
-	client.Connect()
-	Wg.Wait()
+	defer client.Close()
+
+	go func() {
+		defer cancel()
+		err := client.Send()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	}()
+
+	go func() {
+		defer cancel()
+		err := client.Receive()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	}()
+
+	<-ctx.Done()
 }

@@ -1,11 +1,10 @@
 package main
 
 import (
-	"context"
+	"fmt"
 	"io"
 	"net"
-	"os/signal"
-	"syscall"
+	"os"
 	"time"
 )
 
@@ -22,49 +21,29 @@ type Client struct {
 	in      io.ReadCloser
 	out     io.Writer
 	conn    net.Conn
-	Ctx     context.Context
 }
 
-func (c Client) Connect() error {
-	Wg.Add(1)
-	go func() {
-		<-c.Ctx.Done()
-		c.Close()
-	}()
-	return nil
+func (c *Client) Connect() (err error) {
+	c.conn, err = net.DialTimeout("tcp", c.address, c.timeout)
+	fmt.Fprintln(os.Stderr, "...Connected to "+c.address)
+	return
 }
 
-func (c Client) Close() error {
-	Wg.Done()
+func (c *Client) Close() error {
+	fmt.Fprintln(os.Stderr, "...EOF")
 	return c.conn.Close()
 }
 
-func (c Client) Send() error {
-	b, err := io.ReadAll(c.in)
-	if err != nil {
-		return err
-	}
-	_, err = c.conn.Write(b)
-	if err != nil {
-		return err
-	}
+func (c *Client) Send() error {
+	_, err := io.Copy(c.conn, c.in)
 	return err
 }
 
-func (c Client) Receive() error {
-	b, err := io.ReadAll(c.conn)
-	if err != nil {
-		return err
-	}
-	c.out.Write(b)
-	return nil
+func (c *Client) Receive() error {
+	_, err := io.Copy(c.out, c.conn)
+	return err
 }
 
 func NewTelnetClient(address string, timeout time.Duration, in io.ReadCloser, out io.Writer) TelnetClient {
-	dialer := &net.Dialer{}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
-	ctx, _ = signal.NotifyContext(ctx, syscall.SIGINT)
-	conn, _ := dialer.DialContext(ctx, "tcp", address)
-
-	return Client{address: address, timeout: timeout, in: in, out: out, conn: conn, Ctx: ctx}
+	return &Client{address: address, timeout: timeout, in: in, out: out}
 }
