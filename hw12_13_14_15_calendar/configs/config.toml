@@ -1,5 +1,9 @@
 [logger]
 level = "INFO"
 
-# TODO
-# ...
+[database]
+enabled = true
+connection = "postgres"
+host = "127.0.0.1"
+port = "5432"
+# connection = "mysql"
