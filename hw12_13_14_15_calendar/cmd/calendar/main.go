@@ -13,7 +13,7 @@ import (
 	"github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/config"
 	"github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/logger"
 	internalhttp "github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/server/http"
-	memorystorage "github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/storage/memory"
+	"github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/storage"
 )
 
 var configFile string
@@ -34,10 +34,10 @@ func main() {
 	config := config.NewConfig(configFile)
 	logg := logger.New(config.Logger.Level)
 
-	storage := memorystorage.New(config.Database)
+	storage := storage.New(config.Database)
 	calendar := app.New(logg, storage)
 
-	server := internalhttp.NewServer(logg, calendar)
+	server := internalhttp.NewServer(logg, calendar, config)
 
 	ctx, cancel := signal.NotifyContext(context.Background(),
 		syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
