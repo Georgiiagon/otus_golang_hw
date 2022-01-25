@@ -4,8 +4,9 @@ import (
 	"net/http"
 )
 
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO
-	})
+func (s *Server) loggingMiddleware(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		s.Logger.Info("hello there!")
+		h(w, r)
+	}
 }
