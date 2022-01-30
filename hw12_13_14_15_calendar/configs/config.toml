@@ -1,9 +1,15 @@
 [logger]
 level = "INFO"
 
+[app]
+host = "0.0.0.0"
+port = "3000"
+
 [database]
 enabled = true
 connection = "postgres"
-host = "127.0.0.1"
+host = "localhost"
 port = "5432"
-# connection = "mysql"
+user = "root"
+passowrd = "password"
+database = "calendar"

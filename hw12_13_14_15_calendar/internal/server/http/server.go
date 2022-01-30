@@ -36,7 +36,7 @@ func (s *Server) Start(ctx context.Context) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", s.loggingMiddleware(handler.Hello))
 
-	http.ListenAndServe(":3000", mux)
+	http.ListenAndServe(s.Config.App.Host+":"+s.Config.App.Port, mux)
 	<-ctx.Done()
 	return nil
 }
