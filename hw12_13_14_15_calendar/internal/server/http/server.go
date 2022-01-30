@@ -36,13 +36,24 @@ func (s *Server) Start(ctx context.Context) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/hello", s.loggingMiddleware(handler.Hello))
 
-	http.ListenAndServe(s.Config.App.Host+":"+s.Config.App.Port, mux)
-	<-ctx.Done()
+	ch := make(chan error)
+	go func() {
+		err := http.ListenAndServe(s.Config.App.Host+":"+s.Config.App.Port, mux)
+		ch <- err
+	}()
+
+	select {
+	case <-ctx.Done():
+		s.Logger.Info("Closed by context")
+	case err := <-ch:
+		return err
+	}
+
 	return nil
 }
 
 func (s *Server) Stop(ctx context.Context) error {
-	// TODO
+	s.Logger.Info("Stop http server")
 	return nil
 }
 
