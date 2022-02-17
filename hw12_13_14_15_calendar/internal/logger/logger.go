@@ -1,20 +1,33 @@
 package logger
 
-import "fmt"
+import (
+	"go.uber.org/zap"
+)
 
-type Logger struct { // TODO
+type Logger struct {
+	level  string
+	logger *zap.SugaredLogger
 }
 
 func New(level string) *Logger {
-	return &Logger{}
+	logger, _ := zap.NewProduction()
+	defer logger.Sync() // flushes buffer, if any
+	sugar := logger.Sugar()
+	return &Logger{level: level, logger: sugar}
 }
 
 func (l Logger) Info(msg string) {
-	fmt.Println(msg)
+	l.logger.Info(msg)
 }
 
 func (l Logger) Error(msg string) {
-	// TODO
+	l.logger.Error(msg)
 }
 
-// TODO
+func (l Logger) Warn(msg string) {
+	l.logger.Warn(msg)
+}
+
+func (l Logger) Debug(msg string) {
+	l.logger.Debug(msg)
+}
