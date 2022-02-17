@@ -13,7 +13,6 @@ func New(level string) *Logger {
 	logger, _ := zap.NewProduction()
 	defer logger.Sync() // flushes buffer, if any
 	sugar := logger.Sugar()
-
 	return &Logger{level: level, logger: sugar}
 }
 

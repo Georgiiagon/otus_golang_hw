@@ -2,55 +2,52 @@ package sqlstorage
 
 import (
 	"context"
-	"strings"
+	"database/sql"
 
 	"github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/config"
+	storagemodels "github.com/Georgiiagon/otus_golang_hw/hw12_13_14_15_calendar/internal/storage/models"
 )
 
 type Storage struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	Database string
+	dsn string
+	db  *sql.DB
 }
 
 func New(config config.DatabaseConf) *Storage {
-	return &Storage{}
+	return &Storage{
+		db:  &sql.DB{},
+		dsn: config.DSN,
+	}
 }
 
-func (s *Storage) Connect(ctx context.Context) error {
-	// TODO
+func (s *Storage) Connect(ctx context.Context) (err error) {
+	s.db, err = sql.Open("pgx", s.dsn)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func (s *Storage) Close(ctx context.Context) error {
-	// TODO
+	return s.db.Close()
+}
+
+func (s *Storage) CreateEvent(event storagemodels.Event) (*storagemodels.Event, error) {
+	return &event, nil
+}
+
+func (s *Storage) UpdateEvent(event storagemodels.Event) (*storagemodels.Event, error) {
+	return &event, nil
+}
+
+func (s *Storage) DeleteEvent(id int) error {
 	return nil
 }
 
-func (s *Storage) makdDSN() string {
-	str := strings.Builder{}
-	// host=localhost port=5432 user=root password=password dbname=docker sslmode=disable
-	str.WriteString("host=")
-	str.WriteString(s.Host)
-	str.WriteString(" ")
+func (s *Storage) GetEvents() []*storagemodels.Event {
+	eventsSlice := make([]*storagemodels.Event, 0)
 
-	str.WriteString("port=")
-	str.WriteString(s.Port)
-	str.WriteString(" ")
-
-	str.WriteString("user=")
-	str.WriteString(s.User)
-	str.WriteString(" ")
-
-	str.WriteString("password=")
-	str.WriteString(s.Password)
-	str.WriteString(" ")
-
-	str.WriteString("dbname=")
-	str.WriteString(s.Database)
-	str.WriteString(" ")
-
-	return str.String()
+	return eventsSlice
 }

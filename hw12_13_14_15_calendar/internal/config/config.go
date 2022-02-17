@@ -24,19 +24,13 @@ type LoggerConf struct {
 
 type DatabaseConf struct {
 	Connection string `toml:"connection"`
-	Enabled    bool   `toml:"enabled"`
-	Host       string `toml:"host"`
-	Port       string `toml:"port"`
-	User       string `toml:"user"`
-	Password   string `toml:"password"`
-	Database   string `toml:"database"`
+	DSN        string `toml:"dsn"`
 }
 
 func NewConfig(filePath string) Config {
 	config := Config{}
 
 	_, err := toml.DecodeFile(filePath, &config)
-
 	if err != nil {
 		panic(err)
 	}

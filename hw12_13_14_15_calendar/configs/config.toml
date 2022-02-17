@@ -8,8 +8,4 @@ port = "3000"
 [database]
 enabled = true
 connection = "postgres"
-host = "localhost"
-port = "5432"
-user = "root"
-passowrd = "password"
-database = "calendar"
+dsn = "host=localhost port=5432 user=postgres password=postgres dbname=calendar sslmode=disable"
