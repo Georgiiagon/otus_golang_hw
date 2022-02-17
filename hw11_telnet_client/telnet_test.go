@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net"
+	"os"
 	"sync"
 	"testing"
 	"time"
 
+	"github.com/kami-zh/go-capturer"
 	"github.com/stretchr/testify/require"
 )
 
@@ -62,4 +64,32 @@ func TestTelnetClient(t *testing.T) {
 
 		wg.Wait()
 	})
+}
+
+func TestTelnetClientErrors(t *testing.T) {
+	client := NewTelnetClient("127.0.0.1:1234", timeout, os.Stdin, os.Stdout)
+	require.Errorf(t, client.Connect(), "dial tcp 127.0.0.1:1234: connect: connection refused")
+	require.Panics(t, func() { client.Close() })
+}
+
+func TestTelnetStderr(t *testing.T) {
+	l, err := net.Listen("tcp", "127.0.0.1:")
+	require.NoError(t, err)
+	defer func() { require.NoError(t, l.Close()) }()
+	in := &bytes.Buffer{}
+	out := &bytes.Buffer{}
+
+	client := NewTelnetClient(l.Addr().String(), timeout, ioutil.NopCloser(in), out)
+
+	outStr := capturer.CaptureStderr(func() {
+		_ = client.Connect()
+	})
+
+	require.Equal(t, "...Connected to "+l.Addr().String()+"\n", outStr)
+
+	outStr = capturer.CaptureStderr(func() {
+		_ = client.Close()
+	})
+
+	require.Equal(t, "...EOF\n", outStr)
 }
